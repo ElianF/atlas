@@ -2,7 +2,7 @@
 
 <head>
   <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css" />
   <style>
     .row {
       display: flex;
@@ -13,29 +13,64 @@
       padding: 20px;
     }
 
-    tbody tr:nth-child(even) {
-      background-color: white;
+    .ds {
+      background-color: #b5edc2;
+      border-radius: 5px;
+      /* <---------- use this to round all corners in div */
+      padding-top: 1em;
+      padding-left: 1em;
+      padding-right: 1em;
+      padding-bottom: 1em;
+      margin-bottom: 1em;
     }
 
+    .conv {
+      background-color: #edb5b5;
+      border-radius: 5px;
+      /* <---------- use this to round all corners in div */
+      padding-top: 1em;
+      padding-left: 1em;
+      padding-right: 1em;
+      padding-bottom: 1em;
+      margin-bottom: 1em;
+    }
+
+    .join {
+      background-color: #b5c4ed;
+      border-radius: 5px;
+      /* <---------- use this to round all corners in div */
+      padding-top: 1em;
+      padding-left: 1em;
+      padding-right: 1em;
+      padding-bottom: 1em;
+      margin-bottom: 1em;
+    }
+
+    .dp {
+      background-color: #ede1b5;
+      border-radius: 5px;
+      /* <---------- use this to round all corners in div */
+      padding-top: 1em;
+      padding-left: 1em;
+      padding-right: 1em;
+      padding-bottom: 1em;
+      margin-bottom: 1em;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: transparent;
+    }
+
+    input[type=text] {
+      width: 100%;
+    }
 
     tr.tableheader {
       font-weight: bold;
     }
 
-    td.kc {
-      background-color: rgb(228, 116, 140);
-    }
-
-    td.vc {
-      background-color: rgb(147, 235, 125);
-    }
-
-    td.nym {
-      background-color: rgb(124, 151, 202);
-    }
-
-    td.enc {
-      background-color: rgb(124, 151, 202);
+    body {
+      margin: 0em;
     }
   </style>
   <!-- Note the usage of `type=module` here as this is an ES6 module -->
@@ -111,9 +146,9 @@
   </script>
 
 
-  <div id="data-source-a-input">
+  <div id="data-source-a-input" class="ds">
     <h3>Data Source</h3>
-
+    
     <div id="data-source-a-inputtable">
       <form name="inputtable">
         <table id="InputTable-A">
@@ -145,9 +180,7 @@
   </div>
 
   <div id="Pseudonymization" style="display:none;">
-    <hr>
-    <hr>
-    <div id="converter-a-1">
+    <div id="converter-a-1" class="conv">
       <h3>Converter (Pseudonymization)</h3>
       <div>
         <h4> Input: Blinded Table</h4>
@@ -162,9 +195,7 @@
       </div>
     </div>
 
-    <hr>
-
-    <div id="data-source-a-permutate">
+    <div id="data-source-a-permutate" class="ds">
       <h3>Data Source A</h3>
       <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_𝐴, 𝑦_{𝑖,𝑗})</code></pre>
       <div>
@@ -174,7 +205,7 @@
       </div>
     </div>
 
-    <div id="join-table">
+    <div id="join-table" class="join">
       <pre id="inputpre" style="display:none;">
         <code>join attributes Address & Date of Birth</code>
         <code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐁𝐥𝐢𝐧𝐝(bpk_𝑃 , 𝑦_{𝑖,𝑗})</code>
@@ -183,8 +214,7 @@
   </div>
   
   <div id="Join-Request" style="display:none;">
-    <hr>
-    <div id="converter-2">
+    <div id="converter-2" class="conv">
       <h3>Converter (Join) </h3>
       <div>
         <h4> Input: Blinded Tables</h4>
@@ -201,8 +231,7 @@
     </div>
 
     
-    <div id="Data Processor">
-      <hr>
+    <div id="Data Processor" class="dp">
       <h3>Data Processor</h3>
       <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_𝑃 , 𝑦_𝑖,𝑒^∗)</code></pre>
       <div>
