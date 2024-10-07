@@ -96,22 +96,27 @@
     }
 
     function read_table() {
-      var table = document.getElementById('InputTable');
+      var table = document.getElementById('InputTable-A');
       var parsed = parseTable(table);
       console.log(parsed);
-      init_table(JSON.stringify(parsed));
+      var out = init_table(JSON.stringify(parsed));
+      console.log(out);
 
-      document.getElementById('computation').style.display = "block";
+      document.getElementById('inputpre-a').style.display = "block";
+      document.getElementById('Pseudonymization').style.display = "block";
+      
+      document.getElementById('inputpre').style.display = "block";
+      document.getElementById('Join-Request').style.display = "block";
     }
   </script>
 
 
-  <div id="Data Source">
+  <div id="data-source-a-input">
     <h3>Data Source</h3>
 
-    <div id="computation" style="display:none;">
+    <div id="data-source-a-inputtable">
       <form name="inputtable">
-        <table id="InputTable">
+        <table id="InputTable-A">
           <thead>
             <tr>
               <th>Identity</th>
@@ -136,63 +141,49 @@
         <input name="read" id="read_table" type="button" value="Read Table" />
       </form>
     </div>
-    <pre><code>let blinded_table = prepare_split_conversion(
-        ek_lake,
-        bpk_lake,
-        source_table,
-        randomness
-    );</code></pre>
+    <pre id="inputpre-a" style="display:none;"><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_𝑆𝐴, uid)</code></pre>
   </div>
 
-  <hr>
-  <hr>
-
-  <div>
-    <div id="converter-1">
+  <div id="Pseudonymization" style="display:none;">
+    <hr>
+    <hr>
+    <div id="converter-a-1">
       <h3>Converter (Pseudonymization)</h3>
       <div>
         <h4> Input: Blinded Table</h4>
-        <div id="converter-input-1">
+        <div id="converter-input-a-1">
         </div>
       </div>
-      <pre>
-    <code>let converted_split_tables = split_conversion(
-        converter_context,
-        bpk_lake,
-        ek_lake,
-        blinded_table,
-        randomness,
-    );</code></pre>
+      <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐄𝐱𝐞𝐜(𝑘_𝑗, bpk_{𝑆𝐴}, 𝑥_𝑖)</code></pre>
       <div>
         <h4> Output: Obliviously Converted & Split Tables</h4>
-        <div id="converter-output-1">
+        <div id="converter-output-a-1">
         </div>
       </div>
     </div>
 
     <hr>
 
-    <div id="Data Lake">
-      <h3>Data Lake</h3>
-      <pre><code>let pseudonymized_tables =
-        finalize_conversion(lake_context, converted_split_tables);</code></pre>
+    <div id="data-source-a-permutate">
+      <h3>Data Source A</h3>
+      <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_𝐴, 𝑦_{𝑖,𝑗})</code></pre>
       <div>
         <h4>Pseudonymized Tables</h4>
-        <div id="data-lake-tables">
+        <div id="data-source-a-table">
         </div>
       </div>
-      <pre><code>let join_table_selection = ["Address", "Date of Birth"];
-    let blinded_tables = prepare_join_conversion(
-        lake_context,
-        bpk_processor,
-        ek_processor,
-        join_table_selection,
-        randomness,
-    );</code></pre>
     </div>
 
+    <div id="join-table">
+      <pre id="inputpre" style="display:none;">
+        <code>join attributes Address & Date of Birth</code>
+        <code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐁𝐥𝐢𝐧𝐝(bpk_𝑃 , 𝑦_{𝑖,𝑗})</code>
+      </pre>
+    </div>
+  </div>
+  
+  <div id="Join-Request" style="display:none;">
     <hr>
-
     <div id="converter-2">
       <h3>Converter (Join) </h3>
       <div>
@@ -200,14 +191,8 @@
         <div id="converter-input-2">
         </div>
       </div>
-      <pre>
-    <code>let converted_tables = join_conversion(
-        converter_context,
-        bpk_processor,
-        ek_processor,
-        blind_pre_join_tables,
-        randomness,
-    );</code></pre>
+        <pre><code>𝑦_{𝑖,𝑒^∗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐄𝐱𝐞𝐜 (𝑘_𝑗, 𝑘^∗, bpk_𝑝, 𝑦_{𝑖,𝑗})</code>
+        </pre>
       <div>
         <h4> Output: Converted Tables</h4>
         <div id="converter-output-2">
@@ -215,18 +200,18 @@
       </div>
     </div>
 
-    <hr>
-
+    
     <div id="Data Processor">
-      <h3>Data Lake</h3>
-      <pre>
-    <code>let joined_tables = finalize_conversion(processor_context, converted_tables);</code></pre>
+      <hr>
+      <h3>Data Processor</h3>
+      <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_𝑃 , 𝑦_𝑖,𝑒^∗)</code></pre>
       <div>
         <h4> Joined Table</h4>
         <div id="data-processor-joined">
         </div>
       </div>
     </div>
+  </div>
 </body>
 
 </html>

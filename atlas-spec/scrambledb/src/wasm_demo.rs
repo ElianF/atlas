@@ -65,36 +65,35 @@ pub fn run(table: serde_json::Value) {
     let mut randomness = Randomness::new(randomness.to_vec());
 
     // Setup and Source input
-    let source_table = generate_plain_table(table);
-
     let converter_context = ConverterContext::setup(&mut randomness).unwrap();
-
-    let lake_context = StoreContext::setup(&mut randomness).unwrap();
-    let (ek_lake, bpk_lake) = lake_context.public_keys();
+    
+    let source_a_table = generate_plain_table(table);
+    let sourca_a_context = StoreContext::setup(&mut randomness).unwrap();
+    let (ek_a, bpk_a) = sourca_a_context.public_keys();
 
     let processor_context = StoreContext::setup(&mut randomness).unwrap();
     let (ek_processor, bpk_processor) = processor_context.public_keys();
 
     // Split conversion
     let blind_source_table = crate::split::blind_orthonymous_table(
-        &ek_lake,
-        bpk_lake,
-        source_table.clone(),
+        &ek_a,
+        bpk_a,
+        source_a_table.clone(),
         &mut randomness,
     )
     .unwrap();
 
     let blind_split_tables = crate::split::pseudonymize_blinded_table(
         &converter_context,
-        bpk_lake,
-        &ek_lake,
+        bpk_a,
+        &ek_a,
         blind_source_table.clone(),
         &mut randomness,
     )
     .unwrap();
 
     let finalized_split_tables =
-        crate::finalize::finalize_blinded_table(&lake_context, blind_split_tables.clone()).unwrap();
+        crate::finalize::finalize_blinded_table(&sourca_a_context, blind_split_tables.clone()).unwrap();
 
     // Join conversion
     let join_table_selection = Table::new(
@@ -115,7 +114,7 @@ pub fn run(table: serde_json::Value) {
     );
 
     let blind_pre_join_tables = crate::join::blind_pseudonymous_table(
-        &lake_context,
+        &sourca_a_context,
         bpk_processor,
         &ek_processor,
         join_table_selection.clone(),
@@ -148,7 +147,7 @@ pub fn run(table: serde_json::Value) {
 
     for column in DEMO_COLUMN_NAMES {
         // Converter Input
-        let converter_input_1 = dom_insert_column_table(&"converter-input-1", column, &document);
+        let converter_input_1 = dom_insert_column_table(&"converter-input-a-1", column, &document);
         fill_blind_column(
             &converter_input_1,
             blind_source_table
@@ -159,7 +158,7 @@ pub fn run(table: serde_json::Value) {
         );
 
         let converted_table_element =
-            dom_insert_column_table(&"converter-output-1", column, &document);
+            dom_insert_column_table(&"converter-output-a-1", column, &document);
         fill_blinded_pseudonymized_column(
             &converted_table_element,
             blind_split_tables
@@ -169,7 +168,7 @@ pub fn run(table: serde_json::Value) {
                 .collect(),
         );
 
-        let lake_table_element = dom_insert_column_table(&"data-lake-tables", &column, &document);
+        let lake_table_element = dom_insert_column_table(&"data-source-a-table", &column, &document);
         fill_pseudonymized_column(
             &lake_table_element,
             finalized_split_tables
