@@ -13,6 +13,19 @@
       padding: 20px;
     }
 
+    .wrapper {
+      display: flex;
+    }
+
+    .a {
+      flex: 0 0 50%;
+      margin:0 10px 10px 0;
+    }
+
+    .b {
+      flex: 1;
+    }
+
     .ds {
       background-color: #b5edc2;
       border-radius: 5px;
@@ -88,7 +101,7 @@
       init_table,
     } from "./scrambledb.js";
 
-    document.getElementById("read_table").onclick = read_table;
+    document.getElementById("readtable").onclick = read_table;
 
     /**
     * converts array-like object to array
@@ -131,13 +144,22 @@
     }
 
     function read_table() {
-      var table = document.getElementById('InputTable-A');
+      document.getElementById('readtable').style.display = "none";;
+
+      var table = document.getElementById('inputtable-a');
       var parsed = parseTable(table);
       console.log(parsed);
       var out = init_table(JSON.stringify(parsed));
       console.log(out);
-
       document.getElementById('inputpre-a').style.display = "block";
+      
+      var table = document.getElementById('inputtable-b');
+      var parsed = parseTable(table);
+      console.log(parsed);
+      var out = init_table(JSON.stringify(parsed));
+      console.log(out);
+      document.getElementById('inputpre-b').style.display = "block";
+
       document.getElementById('Pseudonymization').style.display = "block";
       
       document.getElementById('inputpre').style.display = "block";
@@ -146,38 +168,71 @@
   </script>
 
 
-  <div id="data-source-a-input" class="ds">
-    <h3>Data Source</h3>
-    
-    <div id="data-source-a-inputtable">
-      <form name="inputtable">
-        <table id="InputTable-A">
-          <thead>
+  <div id="data-source-input" class="wrapper">
+    <div class="ds a">
+      <h3>Data Source A</h3>
+      
+      <div>
+        <form>
+          <table id="inputtable-a">
+            <thead>
+              <tr>
+                <th>Identity</th>
+                <th>Date of Birth</th>
+                <th>Address</th>
+                <th>Favourite Color</th>
+              </tr>
+            </thead>
             <tr>
-              <th>Identity</th>
-              <th>Date of Birth</th>
-              <th>Address</th>
-              <th>Favourite Color</th>
+              <td><input type="text" name="row1" id="row1" value="A" /></td>
+              <td><input type="text" name="row1" id="row1" value="0" /></td>
+              <td><input type="text" name="row1" id="row1" value="A" /></td>
+              <td><input type="text" name="row1" id="row1" value="R" /></td>
             </tr>
-          </thead>
-          <tr>
-            <td><input type="text" name="row1" id="row1" value="A" /></td>
-            <td><input type="text" name="row1" id="row1" value="0" /></td>
-            <td><input type="text" name="row1" id="row1" value="A" /></td>
-            <td><input type="text" name="row1" id="row1" value="R" /></td>
-          </tr>
-          <tr>
-            <td><input type="text" name="row1" id="row1" value="B" /></td>
-            <td><input type="text" name="row1" id="row1" value="1" /></td>
-            <td><input type="text" name="row1" id="row1" value="M" /></td>
-            <td><input type="text" name="row1" id="row1" value="B" /></td>
-          </tr>
-        </table>
-        <input name="read" id="read_table" type="button" value="Read Table" />
-      </form>
+            <tr>
+              <td><input type="text" name="row1" id="row1" value="B" /></td>
+              <td><input type="text" name="row1" id="row1" value="1" /></td>
+              <td><input type="text" name="row1" id="row1" value="M" /></td>
+              <td><input type="text" name="row1" id="row1" value="B" /></td>
+            </tr>
+          </table>
+        </form>
+      </div>
+      <pre id="inputpre-a" style="display:none;"><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_A, uid)</code></pre>
     </div>
-    <pre id="inputpre-a" style="display:none;"><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_𝑆𝐴, uid)</code></pre>
+    <div class="ds b">
+      <h3>Data Source B</h3>
+      
+      <div>
+        <form>
+          <table id="inputtable-b">
+            <thead>
+              <tr>
+                <th>Identity</th>
+                <th>Date of Birth</th>
+                <th>Address</th>
+                <th>Favourite Color</th>
+              </tr>
+            </thead>
+            <tr>
+              <td><input type="text" name="row1" id="row1" value="A" /></td>
+              <td><input type="text" name="row1" id="row1" value="0" /></td>
+              <td><input type="text" name="row1" id="row1" value="A" /></td>
+              <td><input type="text" name="row1" id="row1" value="R" /></td>
+            </tr>
+            <tr>
+              <td><input type="text" name="row1" id="row1" value="B" /></td>
+              <td><input type="text" name="row1" id="row1" value="1" /></td>
+              <td><input type="text" name="row1" id="row1" value="M" /></td>
+              <td><input type="text" name="row1" id="row1" value="B" /></td>
+            </tr>
+          </table>
+        </form>
+      </div>
+      <pre id="inputpre-b" style="display:none;"><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_B, uid)</code></pre>
+    </div>
   </div>
+  <input name="read" id="readtable" type="button" value="Read Tables" />
 
   <div id="Pseudonymization" style="display:none;">
     <div id="converter-a-1" class="conv">
@@ -186,8 +241,7 @@
         <summary>
           Input: Blinded Table
         </summary>
-        <div id="converter-input-a-1">
-        </div>
+        <div id="converter-input-a-1"></div>
       </details>
       <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐄𝐱𝐞𝐜(𝑘_𝑗, bpk_{𝑆𝐴}, 𝑥_𝑖)</code></pre>
       <div>
