@@ -19,12 +19,20 @@
     }
 
     .heading {
-      flex: 0 0 100%;
+      flex: 1 0 100%;
+    }
+
+    .conv .a {
+      padding-right: 1em;
+    }
+    
+    .conv .b {
+      padding-left: 1em;
     }
 
     .a {
-      flex: 0 0 50%;
-      margin-right: 10px
+      flex: 1;
+      margin-right: 10px;
     }
     
     .b {
@@ -89,6 +97,7 @@
 
     body {
       margin: 0em;
+      max-width: 1300px;
     }
   </style>
   <!-- Note the usage of `type=module` here as this is an ES6 module -->
@@ -156,24 +165,24 @@
       console.log(parsed);
       // var out = init_table(JSON.stringify(parsed));
       // console.log(out);
-      document.getElementById('inputpre-a').style.display = "block";
+      document.getElementById('pastinput-a').style.display = "block";
       
       var table = document.getElementById('inputtable-b');
       var parsed = parseTable(table);
       console.log(parsed);
       // var out = init_table(JSON.stringify(parsed));
       // console.log(out);
-      document.getElementById('inputpre-b').style.display = "block";
+      document.getElementById('pastinput-b').style.display = "block";
 
       document.getElementById('pseudonymization').style.display = "block";
       
-      document.getElementById('inputpre').style.display = "block";
-      document.getElementById('Join-Request').style.display = "block";
+      document.getElementById('join').style.display = "block";
     }
   </script>
 
 
   <div id="data-source-input" class="wrapper">
+
     <div class="ds a">
       <h3>Data Source A</h3>
       
@@ -203,7 +212,15 @@
           </table>
         </form>
       </div>
-      <pre id="inputpre-a" style="display:none;"><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_A, uid)</code></pre>
+      <div id="pastinput-a" style="display:none;">
+        <pre><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_A, uid)</code></pre>
+        <details>
+          <summary>
+            Input: Blinded Table A
+          </summary>
+          <div id="data-source-blind-1-a"></div>
+        </details>
+      </div>
     </div>
     <div class="ds b">
       <h3>Data Source B</h3>
@@ -234,7 +251,15 @@
           </table>
         </form>
       </div>
-      <pre id="inputpre-b" style="display:none;"><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_B, uid)</code></pre>
+      <div id="pastinput-b" style="display:none;">
+        <pre><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_B, uid)</code></pre>
+        <details>
+          <summary>
+            Input: Blinded Table B
+          </summary>
+          <div id="data-source-blind-1-b"></div>
+        </details>
+      </div>
     </div>
   </div>
   <input name="read" id="readtable" type="button" value="Read Tables" />
@@ -245,31 +270,18 @@
         <h3>Converter (Pseudonymization)</h3>
       </div>
       <div class="a">
-        <details>
-          <summary>
-            Input: Blinded Table A
-          </summary>
-          <div id="converter-1-input-a"></div>
-        </details>
         <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐄𝐱𝐞𝐜(𝑘_𝑗, bpk_A, 𝑥_𝑖)</code></pre>
         <div>
           <h4> Output: Obliviously Converted & Split Tables</h4>
-          <div id="converter-1-output-a">
+          <div id="converter-output-1-a">
           </div>
         </div>
       </div>
-      <div class="verticalLine"></div>
       <div class="b">
-        <details>
-          <summary>
-            Input: Blinded Table B
-          </summary>
-          <div id="converter-1-input-b"></div>
-        </details>
         <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐄𝐱𝐞𝐜(𝑘_𝑗, bpk_B, 𝑥_𝑖)</code></pre>
         <div>
           <h4> Output: Obliviously Converted & Split Tables</h4>
-          <div id="converter-1-output-b"></div>
+          <div id="converter-output-1-b"></div>
         </div>
       </div>
     </div>
@@ -293,32 +305,57 @@
       </div>
     </div>
 
-    <div id="join-table" class="join">
-      <pre id="inputpre" style="display:none;">
+    <div id="join-request" class="dp">
+      <h3>Data Processor (Join-Request)</h3>
+      <pre>
         <code>join attributes Address & Date of Birth</code>
-        <code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐁𝐥𝐢𝐧𝐝(bpk_𝑃 , 𝑦_{𝑖,𝑗})</code>
       </pre>
     </div>
+    
   </div>
   
-  <div id="Join-Request" style="display:none;">
-    <div id="converter-2" class="conv">
-      <h3>Converter (Join) </h3>
-      <div>
-        <h4> Input: Blinded Tables</h4>
-        <div id="converter-input-2">
+  <div id="join" style="display:none;">
+
+    <div id="join-prepare" class="wrapper">
+      <div class="ds a">
+        <h3>Data Source A</h3>
+        <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐁𝐥𝐢𝐧𝐝(bpk_𝑃 , 𝑦_{𝑖,𝑗})</code></pre>  
+        <div>
+          <h4> Input: Blinded Tables</h4>
+          <div id="data-source-blind-2-a"></div>
         </div>
       </div>
-        <pre><code>𝑦_{𝑖,𝑒^∗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐄𝐱𝐞𝐜 (𝑘_𝑗, 𝑘^∗, bpk_𝑝, 𝑦_{𝑖,𝑗})</code>
-        </pre>
-      <div>
-        <h4> Output: Converted Tables</h4>
-        <div id="converter-output-2">
+      <div class="ds b">
+        <h3>Data Source B</h3>
+        <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐁𝐥𝐢𝐧𝐝(bpk_𝑃 , 𝑦_{𝑖,𝑗})</code></pre>
+        <div>
+          <h4> Input: Blinded Tables</h4>
+          <div id="data-source-blind-2-b"></div>
         </div>
       </div>
     </div>
 
-    
+    <div id="converter" class="wrapper conv">
+      <div class="heading">
+        <h3>Converter (Join)</h3>
+      </div>
+      
+      <div class="a">
+        <pre><code>𝑦_{𝑖,𝑒^∗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐄𝐱𝐞𝐜 (𝑘_𝑗, 𝑘^∗, bpk_𝑝, 𝑦_{𝑖,𝑗})</code></pre>
+        <div>
+          <h4> Output: Converted Tables</h4>
+          <div id="converter-output-2-a"></div>
+        </div>
+      </div>
+      <div class="b">
+        <pre><code>𝑦_{𝑖,𝑒^∗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐄𝐱𝐞𝐜 (𝑘_𝑗, 𝑘^∗, bpk_𝑝, 𝑦_{𝑖,𝑗})</code></pre>
+        <div>
+          <h4> Output: Converted Tables</h4>
+          <div id="converter-output-2-b"></div>
+        </div>
+      </div>
+    </div>
+
     <div id="Data Processor" class="dp">
       <h3>Data Processor</h3>
       <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_𝑃 , 𝑦_𝑖,𝑒^∗)</code></pre>
@@ -328,6 +365,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </body>
 

@@ -147,7 +147,7 @@ pub fn run(table: serde_json::Value) {
 
     for column in DEMO_COLUMN_NAMES {
         // Converter Input
-        let converter_input_1 = dom_insert_column_table(&"converter-1-input-a", column, &document);
+        let converter_input_1 = dom_insert_column_table(&"data-source-blind-1-a", column, &document);
         fill_blind_column(
             &converter_input_1,
             blind_source_table
@@ -158,7 +158,7 @@ pub fn run(table: serde_json::Value) {
         );
 
         let converted_table_element =
-            dom_insert_column_table(&"converter-1-output-a", column, &document);
+            dom_insert_column_table(&"converter-output-1-a", column, &document);
         fill_blinded_pseudonymized_column(
             &converted_table_element,
             blind_split_tables
@@ -181,7 +181,7 @@ pub fn run(table: serde_json::Value) {
 
     for column in DEMO_COLUMN_NAMES[0..2].iter() {
         let converter_input_element_2 =
-            dom_insert_column_table(&"converter-input-2", column, &document);
+            dom_insert_column_table(&"data-source-blind-2-a", column, &document);
 
         fill_blinded_pseudonymized_column(
             &converter_input_element_2,
@@ -193,7 +193,7 @@ pub fn run(table: serde_json::Value) {
         );
 
         let converter_output_element_2 =
-            dom_insert_column_table(&"converter-output-2", column, &document);
+            dom_insert_column_table(&"converter-output-2-a", column, &document);
         fill_blinded_pseudonymized_column(
             &converter_output_element_2,
             blind_joined_tables
