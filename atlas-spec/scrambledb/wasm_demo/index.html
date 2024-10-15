@@ -15,17 +15,22 @@
 
     .wrapper {
       display: flex;
+      flex-wrap: wrap;
+    }
+
+    .heading {
+      flex: 0 0 100%;
     }
 
     .a {
       flex: 0 0 50%;
-      margin:0 10px 10px 0;
+      margin-right: 10px
     }
-
+    
     .b {
       flex: 1;
     }
-
+    
     .ds {
       background-color: #b5edc2;
       border-radius: 5px;
@@ -149,18 +154,18 @@
       var table = document.getElementById('inputtable-a');
       var parsed = parseTable(table);
       console.log(parsed);
-      var out = init_table(JSON.stringify(parsed));
-      console.log(out);
+      // var out = init_table(JSON.stringify(parsed));
+      // console.log(out);
       document.getElementById('inputpre-a').style.display = "block";
       
       var table = document.getElementById('inputtable-b');
       var parsed = parseTable(table);
       console.log(parsed);
-      var out = init_table(JSON.stringify(parsed));
-      console.log(out);
+      // var out = init_table(JSON.stringify(parsed));
+      // console.log(out);
       document.getElementById('inputpre-b').style.display = "block";
 
-      document.getElementById('Pseudonymization').style.display = "block";
+      document.getElementById('pseudonymization').style.display = "block";
       
       document.getElementById('inputpre').style.display = "block";
       document.getElementById('Join-Request').style.display = "block";
@@ -234,29 +239,56 @@
   </div>
   <input name="read" id="readtable" type="button" value="Read Tables" />
 
-  <div id="Pseudonymization" style="display:none;">
-    <div id="converter-a-1" class="conv">
-      <h3>Converter (Pseudonymization)</h3>
-      <details>
-        <summary>
-          Input: Blinded Table
-        </summary>
-        <div id="converter-input-a-1"></div>
-      </details>
-      <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐄𝐱𝐞𝐜(𝑘_𝑗, bpk_{𝑆𝐴}, 𝑥_𝑖)</code></pre>
-      <div>
-        <h4> Output: Obliviously Converted & Split Tables</h4>
-        <div id="converter-output-a-1">
+  <div id="pseudonymization" style="display:none;">
+    <div id="converter" class="wrapper conv">
+      <div class="heading">
+        <h3>Converter (Pseudonymization)</h3>
+      </div>
+      <div class="a">
+        <details>
+          <summary>
+            Input: Blinded Table A
+          </summary>
+          <div id="converter-1-input-a"></div>
+        </details>
+        <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐄𝐱𝐞𝐜(𝑘_𝑗, bpk_A, 𝑥_𝑖)</code></pre>
+        <div>
+          <h4> Output: Obliviously Converted & Split Tables</h4>
+          <div id="converter-1-output-a">
+          </div>
+        </div>
+      </div>
+      <div class="verticalLine"></div>
+      <div class="b">
+        <details>
+          <summary>
+            Input: Blinded Table B
+          </summary>
+          <div id="converter-1-input-b"></div>
+        </details>
+        <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐄𝐱𝐞𝐜(𝑘_𝑗, bpk_B, 𝑥_𝑖)</code></pre>
+        <div>
+          <h4> Output: Obliviously Converted & Split Tables</h4>
+          <div id="converter-1-output-b"></div>
         </div>
       </div>
     </div>
 
-    <div id="data-source-a-permutate" class="ds">
-      <h3>Data Source A</h3>
-      <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_𝐴, 𝑦_{𝑖,𝑗})</code></pre>
-      <div>
-        <h4>Pseudonymized Tables</h4>
-        <div id="data-source-a-table">
+    <div id="data-source-permutate" class="wrapper">
+      <div class="ds a">
+        <h3>Data Source A</h3>
+        <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_𝐴, 𝑦_{𝑖,𝑗})</code></pre>
+        <div>
+          <h4>Pseudonymized Tables</h4>
+          <div id="data-source-table-a"></div>
+        </div>
+      </div>
+      <div class="ds b">
+        <h3>Data Source B</h3>
+        <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_B, 𝑦_{𝑖,𝑗})</code></pre>
+        <div>
+          <h4>Pseudonymized Tables</h4>
+          <div id="data-source-table-b"></div>
         </div>
       </div>
     </div>

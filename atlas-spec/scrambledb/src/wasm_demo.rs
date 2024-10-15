@@ -147,7 +147,7 @@ pub fn run(table: serde_json::Value) {
 
     for column in DEMO_COLUMN_NAMES {
         // Converter Input
-        let converter_input_1 = dom_insert_column_table(&"converter-input-a-1", column, &document);
+        let converter_input_1 = dom_insert_column_table(&"converter-1-input-a", column, &document);
         fill_blind_column(
             &converter_input_1,
             blind_source_table
@@ -158,7 +158,7 @@ pub fn run(table: serde_json::Value) {
         );
 
         let converted_table_element =
-            dom_insert_column_table(&"converter-output-a-1", column, &document);
+            dom_insert_column_table(&"converter-1-output-a", column, &document);
         fill_blinded_pseudonymized_column(
             &converted_table_element,
             blind_split_tables
@@ -168,7 +168,7 @@ pub fn run(table: serde_json::Value) {
                 .collect(),
         );
 
-        let lake_table_element = dom_insert_column_table(&"data-source-a-table", &column, &document);
+        let lake_table_element = dom_insert_column_table(&"data-source-table-a", &column, &document);
         fill_pseudonymized_column(
             &lake_table_element,
             finalized_split_tables
