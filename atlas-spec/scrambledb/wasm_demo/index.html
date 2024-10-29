@@ -163,8 +163,8 @@
       var table = document.getElementById('inputtable-a');
       var parsed = parseTable(table);
       console.log(parsed);
-      // var out = init_table(JSON.stringify(parsed));
-      // console.log(out);
+      var out = init_table(JSON.stringify(parsed));
+      console.log(out);
       document.getElementById('pastinput-a').style.display = "block";
       
       var table = document.getElementById('inputtable-b');
@@ -214,7 +214,7 @@
       </div>
       <div id="pastinput-a" style="display:none;">
         <pre><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_A, uid)</code></pre>
-        <details>
+        <details open>
           <summary>
             Input: Blinded Table A
           </summary>
@@ -253,7 +253,7 @@
       </div>
       <div id="pastinput-b" style="display:none;">
         <pre><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_B, uid)</code></pre>
-        <details>
+        <details open>
           <summary>
             Input: Blinded Table B
           </summary>
@@ -272,16 +272,23 @@
       <div class="a">
         <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐄𝐱𝐞𝐜(𝑘_𝑗, bpk_A, 𝑥_𝑖)</code></pre>
         <div>
-          <h4> Output: Obliviously Converted & Split Tables</h4>
-          <div id="converter-output-1-a">
-          </div>
+          <details open>
+            <summary>
+              Output: Obliviously Converted & Split Tables
+            </summary>
+            <div id="converter-output-1-a"></div>
+          </details>
         </div>
       </div>
       <div class="b">
         <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐄𝐱𝐞𝐜(𝑘_𝑗, bpk_B, 𝑥_𝑖)</code></pre>
         <div>
-          <h4> Output: Obliviously Converted & Split Tables</h4>
-          <div id="converter-output-1-b"></div>
+          <details open>
+            <summary>
+              Output: Obliviously Converted & Split Tables
+            </summary>
+            <div id="converter-output-1-b"></div>
+          </details>
         </div>
       </div>
     </div>
@@ -291,16 +298,25 @@
         <h3>Data Source A</h3>
         <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_𝐴, 𝑦_{𝑖,𝑗})</code></pre>
         <div>
-          <h4>Pseudonymized Tables</h4>
-          <div id="data-source-table-a"></div>
+          <details open>
+            <summary>
+              Pseudonymized Tables
+            </summary>
+            <div id="data-source-table-a"></div>
+          </details>
         </div>
       </div>
       <div class="ds b">
         <h3>Data Source B</h3>
         <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_B, 𝑦_{𝑖,𝑗})</code></pre>
         <div>
-          <h4>Pseudonymized Tables</h4>
-          <div id="data-source-table-b"></div>
+          
+          <details open>
+            <summary>
+              Pseudonymized Tables
+            </summary>
+            <div id="data-source-table-b"></div>
+          </details>
         </div>
       </div>
     </div>
@@ -321,16 +337,24 @@
         <h3>Data Source A</h3>
         <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐁𝐥𝐢𝐧𝐝(bpk_𝑃 , 𝑦_{𝑖,𝑗})</code></pre>  
         <div>
-          <h4> Input: Blinded Tables</h4>
-          <div id="data-source-blind-2-a"></div>
+          <details open>
+            <summary>
+              Input: Blinded Tables
+            </summary>
+            <div id="data-source-blind-2-a"></div>
+          </details>
         </div>
       </div>
       <div class="ds b">
         <h3>Data Source B</h3>
         <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐁𝐥𝐢𝐧𝐝(bpk_𝑃 , 𝑦_{𝑖,𝑗})</code></pre>
         <div>
-          <h4> Input: Blinded Tables</h4>
-          <div id="data-source-blind-2-b"></div>
+          <details open>
+            <summary>
+              Input: Blinded Tables
+            </summary>
+            <div id="data-source-blind-2-b"></div>
+          </details>
         </div>
       </div>
     </div>
@@ -343,15 +367,23 @@
       <div class="a">
         <pre><code>𝑦_{𝑖,𝑒^∗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐄𝐱𝐞𝐜 (𝑘_𝑗, 𝑘^∗, bpk_𝑝, 𝑦_{𝑖,𝑗})</code></pre>
         <div>
-          <h4> Output: Converted Tables</h4>
-          <div id="converter-output-2-a"></div>
+          <details open>
+            <summary>
+              Output: Converted Tables
+            </summary>
+            <div id="converter-output-2-a"></div>
+          </details>
         </div>
       </div>
       <div class="b">
         <pre><code>𝑦_{𝑖,𝑒^∗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐄𝐱𝐞𝐜 (𝑘_𝑗, 𝑘^∗, bpk_𝑝, 𝑦_{𝑖,𝑗})</code></pre>
         <div>
-          <h4> Output: Converted Tables</h4>
-          <div id="converter-output-2-b"></div>
+          <details open>
+            <summary>
+              Output: Converted Tables
+            </summary>
+            <div id="converter-output-2-b"></div>
+          </details>
         </div>
       </div>
     </div>
@@ -360,9 +392,12 @@
       <h3>Data Processor</h3>
       <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_𝑃 , 𝑦_𝑖,𝑒^∗)</code></pre>
       <div>
-        <h4> Joined Table</h4>
-        <div id="data-processor-joined">
-        </div>
+        <details open>
+          <summary>
+            Joined Table
+          </summary>
+          <div id="data-processor-joined"></div>
+        </details>
       </div>
     </div>
 

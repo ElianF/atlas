@@ -35,7 +35,7 @@ pub fn init_table(table: JsValue) {
 
 const DEMO_COLUMN_NAMES: [&str; 3] = ["Address", "Date of Birth", "Favourite Color"];
 
-pub fn generate_plain_table(table: serde_json::Value) -> Table<IdentifiableData> {
+pub fn generate_plain_table(table: serde_json::Value, columns: [&str; 1]) -> Table<IdentifiableData> {
     let mut data = Vec::new();
     for column in DEMO_COLUMN_NAMES {
         for i in 0..table.as_array().unwrap().len() {
@@ -64,10 +64,13 @@ pub fn run(table: serde_json::Value) {
     rng.fill_bytes(&mut randomness);
     let mut randomness = Randomness::new(randomness.to_vec());
 
+    const DEMO_COLUMN_NAMES_A: [&str; 1] = ["Address"];
+    const DEMO_COLUMN_NAMES_B: [&str; 1] = ["Date of Birth"];
+
     // Setup and Source input
     let converter_context = ConverterContext::setup(&mut randomness).unwrap();
     
-    let source_a_table = generate_plain_table(table);
+    let source_a_table = generate_plain_table(table, DEMO_COLUMN_NAMES_A);
     let sourca_a_context = StoreContext::setup(&mut randomness).unwrap();
     let (ek_a, bpk_a) = sourca_a_context.public_keys();
 
