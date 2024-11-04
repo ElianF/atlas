@@ -33,7 +33,7 @@ pub fn init_table(table: JsValue, source: String) {
     run(table, &source.to_owned())
 }
 
-const DEMO_COLUMN_NAMES_A: [&str; 1] = ["Address"];
+const DEMO_COLUMN_NAMES_A: [&str; 1] = ["Favourite Color"];
 const DEMO_COLUMN_NAMES_B: [&str; 1] = ["Date of Birth"];
 
 pub fn generate_plain_table(table: serde_json::Value, columns: [&str; 1]) -> Table<IdentifiableData> {
