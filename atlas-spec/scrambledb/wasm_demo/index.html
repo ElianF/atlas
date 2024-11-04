@@ -163,15 +163,15 @@
       var table = document.getElementById('inputtable-a');
       var parsed = parseTable(table);
       console.log(parsed);
-      var out = init_table(JSON.stringify(parsed));
+      var out = init_table(JSON.stringify(parsed), "a");
       console.log(out);
       document.getElementById('pastinput-a').style.display = "block";
       
       var table = document.getElementById('inputtable-b');
       var parsed = parseTable(table);
       console.log(parsed);
-      // var out = init_table(JSON.stringify(parsed));
-      // console.log(out);
+      var out = init_table(JSON.stringify(parsed), "b");
+      console.log(out);
       document.getElementById('pastinput-b').style.display = "block";
 
       document.getElementById('pseudonymization').style.display = "block";

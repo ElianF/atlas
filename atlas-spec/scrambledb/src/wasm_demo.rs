@@ -27,17 +27,18 @@ use gloo_utils::format::JsValueSerdeExt;
 pub fn demo_blind_table() {}
 
 #[wasm_bindgen]
-pub fn init_table(table: JsValue) {
+pub fn init_table(table: JsValue, source: String) {
     let table: String = table.into_serde().unwrap();
     let table: serde_json::Value = serde_json::from_str(&table).unwrap();
-    run(table)
+    run(table, &source.to_owned())
 }
 
-const DEMO_COLUMN_NAMES: [&str; 3] = ["Address", "Date of Birth", "Favourite Color"];
+const DEMO_COLUMN_NAMES_A: [&str; 1] = ["Address"];
+const DEMO_COLUMN_NAMES_B: [&str; 1] = ["Date of Birth"];
 
 pub fn generate_plain_table(table: serde_json::Value, columns: [&str; 1]) -> Table<IdentifiableData> {
     let mut data = Vec::new();
-    for column in DEMO_COLUMN_NAMES {
+    for column in columns {
         for i in 0..table.as_array().unwrap().len() {
             let row = &table[i];
 
@@ -56,7 +57,7 @@ pub fn generate_plain_table(table: serde_json::Value, columns: [&str; 1]) -> Tab
     Table::new("ExampleTable".into(), data)
 }
 
-pub fn run(table: serde_json::Value) {
+pub fn run(table: serde_json::Value, source: &str) {
     use rand::prelude::*;
 
     let mut rng = rand::thread_rng();
@@ -64,39 +65,46 @@ pub fn run(table: serde_json::Value) {
     rng.fill_bytes(&mut randomness);
     let mut randomness = Randomness::new(randomness.to_vec());
 
-    const DEMO_COLUMN_NAMES_A: [&str; 1] = ["Address"];
-    const DEMO_COLUMN_NAMES_B: [&str; 1] = ["Date of Birth"];
-
-    // Setup and Source input
+    // Setup contexts
     let converter_context = ConverterContext::setup(&mut randomness).unwrap();
     
-    let source_a_table = generate_plain_table(table, DEMO_COLUMN_NAMES_A);
-    let sourca_a_context = StoreContext::setup(&mut randomness).unwrap();
-    let (ek_a, bpk_a) = sourca_a_context.public_keys();
-
     let processor_context = StoreContext::setup(&mut randomness).unwrap();
     let (ek_processor, bpk_processor) = processor_context.public_keys();
+    
+    let columns;
+    if source == "a" {
+        columns = DEMO_COLUMN_NAMES_A;
+    } else if source == "b" {
+        columns = DEMO_COLUMN_NAMES_B;
+    } else {
+        return;
+    }
+
+    // Setup and Source input
+    let source_table = generate_plain_table(table, columns);
+    let source_context = StoreContext::setup(&mut randomness).unwrap();
+    let (ek, bpk) = source_context.public_keys();
 
     // Split conversion
     let blind_source_table = crate::split::blind_orthonymous_table(
-        &ek_a,
-        bpk_a,
-        source_a_table.clone(),
+        &ek,
+        bpk,
+        source_table.clone(),
         &mut randomness,
     )
     .unwrap();
 
     let blind_split_tables = crate::split::pseudonymize_blinded_table(
         &converter_context,
-        bpk_a,
-        &ek_a,
+        bpk,
+        &ek,
         blind_source_table.clone(),
         &mut randomness,
     )
     .unwrap();
 
     let finalized_split_tables =
-        crate::finalize::finalize_blinded_table(&sourca_a_context, blind_split_tables.clone()).unwrap();
+        crate::finalize::finalize_blinded_table(&source_context, blind_split_tables.clone()).unwrap();
 
     // Join conversion
     let join_table_selection = Table::new(
@@ -105,8 +113,8 @@ pub fn run(table: serde_json::Value) {
             .data()
             .iter()
             .filter_map(|entry| {
-                if entry.data_value.attribute_name == DEMO_COLUMN_NAMES[0]
-                    || entry.data_value.attribute_name == DEMO_COLUMN_NAMES[1]
+                if entry.data_value.attribute_name == DEMO_COLUMN_NAMES_A[0]
+                    || entry.data_value.attribute_name == DEMO_COLUMN_NAMES_B[0]
                 {
                     Some(entry.clone())
                 } else {
@@ -117,7 +125,7 @@ pub fn run(table: serde_json::Value) {
     );
 
     let blind_pre_join_tables = crate::join::blind_pseudonymous_table(
-        &sourca_a_context,
+        &source_context,
         bpk_processor,
         &ek_processor,
         join_table_selection.clone(),
@@ -148,9 +156,9 @@ pub fn run(table: serde_json::Value) {
     //     dom_insert_multicolumn_table(&"data-source-table-plain", &source_table, &document);
     // fill_plain_table(&source_table_dom, &source_table);
 
-    for column in DEMO_COLUMN_NAMES {
+    for column in columns {
         // Converter Input
-        let converter_input_1 = dom_insert_column_table(&"data-source-blind-1-a", column, &document);
+        let converter_input_1 = dom_insert_column_table(&("data-source-blind-1-".to_owned()+source), column, &document);
         fill_blind_column(
             &converter_input_1,
             blind_source_table
@@ -161,7 +169,7 @@ pub fn run(table: serde_json::Value) {
         );
 
         let converted_table_element =
-            dom_insert_column_table(&"converter-output-1-a", column, &document);
+            dom_insert_column_table(&("converter-output-1-".to_owned()+source), column, &document);
         fill_blinded_pseudonymized_column(
             &converted_table_element,
             blind_split_tables
@@ -171,7 +179,7 @@ pub fn run(table: serde_json::Value) {
                 .collect(),
         );
 
-        let lake_table_element = dom_insert_column_table(&"data-source-table-a", &column, &document);
+        let lake_table_element = dom_insert_column_table(&("data-source-table-".to_owned()+source), &column, &document);
         fill_pseudonymized_column(
             &lake_table_element,
             finalized_split_tables
@@ -182,9 +190,9 @@ pub fn run(table: serde_json::Value) {
         );
     }
 
-    for column in DEMO_COLUMN_NAMES[0..2].iter() {
+    for column in columns.iter() {
         let converter_input_element_2 =
-            dom_insert_column_table(&"data-source-blind-2-a", column, &document);
+            dom_insert_column_table(&("data-source-blind-2-".to_owned()+source), column, &document);
 
         fill_blinded_pseudonymized_column(
             &converter_input_element_2,
@@ -196,7 +204,7 @@ pub fn run(table: serde_json::Value) {
         );
 
         let converter_output_element_2 =
-            dom_insert_column_table(&"converter-output-2-a", column, &document);
+            dom_insert_column_table(&("converter-output-2-".to_owned()+source), column, &document);
         fill_blinded_pseudonymized_column(
             &converter_output_element_2,
             blind_joined_tables
