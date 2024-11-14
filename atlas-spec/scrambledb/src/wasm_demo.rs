@@ -27,10 +27,10 @@ use gloo_utils::format::JsValueSerdeExt;
 pub fn demo_blind_table() {}
 
 #[wasm_bindgen]
-pub fn init_table(table: JsValue, source: String) {
+pub fn init_table(table: JsValue, source: String, seed: i32) {
     let table: String = table.into_serde().unwrap();
     let table: serde_json::Value = serde_json::from_str(&table).unwrap();
-    run(table, &source.to_owned())
+    run(table, &source.to_owned(), seed as u64)
 }
 
 const DEMO_COLUMN_NAMES_A: [&str; 2] = ["Address", "Favourite Color"];
@@ -57,18 +57,24 @@ pub fn generate_plain_table(table: serde_json::Value, columns: &Vec<&str>) -> Ta
     Table::new("ExampleTable".into(), data)
 }
 
-pub fn run(table: serde_json::Value, source: &str) {
+pub fn run(table: serde_json::Value, source: &str, seed: u64) {
     use rand::prelude::*;
 
     let mut rng = rand::thread_rng();
-    let mut randomness = [0u8; 1000000];
+    let mut seeded_rng = rand::rngs::StdRng::seed_from_u64(seed);
+
+    let mut randomness = [0u8; 100000];
     rng.fill_bytes(&mut randomness);
     let mut randomness = Randomness::new(randomness.to_vec());
+    
+    let mut seeded_randomness = [0u8; 100000];
+    seeded_rng.fill_bytes(&mut seeded_randomness);
+    let mut seeded_randomness = Randomness::new(seeded_randomness.to_vec());
 
     // Setup contexts
-    let converter_context = ConverterContext::setup(&mut randomness).unwrap();
+    let converter_context = ConverterContext::setup(&mut seeded_randomness).unwrap();
     
-    let processor_context = StoreContext::setup(&mut randomness).unwrap();
+    let processor_context = StoreContext::setup(&mut seeded_randomness).unwrap();
     let (ek_processor, bpk_processor) = processor_context.public_keys();
     
     let columns: Vec<&str>;
@@ -137,7 +143,7 @@ pub fn run(table: serde_json::Value, source: &str) {
         bpk_processor,
         &ek_processor,
         blind_pre_join_tables.clone(),
-        &mut randomness,
+        &mut seeded_randomness,
     )
     .unwrap();
 
