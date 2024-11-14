@@ -33,10 +33,10 @@ pub fn init_table(table: JsValue, source: String) {
     run(table, &source.to_owned())
 }
 
-const DEMO_COLUMN_NAMES_A: [&str; 1] = ["Favourite Color"];
+const DEMO_COLUMN_NAMES_A: [&str; 2] = ["Address", "Favourite Color"];
 const DEMO_COLUMN_NAMES_B: [&str; 1] = ["Date of Birth"];
 
-pub fn generate_plain_table(table: serde_json::Value, columns: [&str; 1]) -> Table<IdentifiableData> {
+pub fn generate_plain_table(table: serde_json::Value, columns: &Vec<&str>) -> Table<IdentifiableData> {
     let mut data = Vec::new();
     for column in columns {
         for i in 0..table.as_array().unwrap().len() {
@@ -48,7 +48,7 @@ pub fn generate_plain_table(table: serde_json::Value, columns: [&str; 1]) -> Tab
                 handle: row["Identity"].as_str().unwrap().to_string(),
                 data_value: DataValue {
                     value: encoded_value,
-                    attribute_name: column.into(),
+                    attribute_name: (*column).into(),
                 },
             });
         }
@@ -71,17 +71,17 @@ pub fn run(table: serde_json::Value, source: &str) {
     let processor_context = StoreContext::setup(&mut randomness).unwrap();
     let (ek_processor, bpk_processor) = processor_context.public_keys();
     
-    let columns;
+    let columns: Vec<&str>;
     if source == "a" {
-        columns = DEMO_COLUMN_NAMES_A;
+        columns = DEMO_COLUMN_NAMES_A.into();
     } else if source == "b" {
-        columns = DEMO_COLUMN_NAMES_B;
+        columns = DEMO_COLUMN_NAMES_B.into();
     } else {
         return;
     }
 
     // Setup and Source input
-    let source_table = generate_plain_table(table, columns);
+    let source_table = generate_plain_table(table, &columns);
     let source_context = StoreContext::setup(&mut randomness).unwrap();
     let (ek, bpk) = source_context.public_keys();
 
@@ -113,8 +113,7 @@ pub fn run(table: serde_json::Value, source: &str) {
             .data()
             .iter()
             .filter_map(|entry| {
-                if entry.data_value.attribute_name == DEMO_COLUMN_NAMES_A[0]
-                    || entry.data_value.attribute_name == DEMO_COLUMN_NAMES_B[0]
+                if columns.contains(&entry.data_value.attribute_name.as_str())
                 {
                     Some(entry.clone())
                 } else {
@@ -156,7 +155,7 @@ pub fn run(table: serde_json::Value, source: &str) {
     //     dom_insert_multicolumn_table(&"data-source-table-plain", &source_table, &document);
     // fill_plain_table(&source_table_dom, &source_table);
 
-    for column in columns {
+    for column in &columns {
         // Converter Input
         let converter_input_1 = dom_insert_column_table(&("data-source-blind-1-".to_owned()+source), column, &document);
         fill_blind_column(
@@ -164,7 +163,7 @@ pub fn run(table: serde_json::Value, source: &str) {
             blind_source_table
                 .data()
                 .iter()
-                .filter(|entry| entry.encrypted_data_value.attribute_name == column)
+                .filter(|entry| entry.encrypted_data_value.attribute_name == *column)
                 .collect(),
         );
 
@@ -175,7 +174,7 @@ pub fn run(table: serde_json::Value, source: &str) {
             blind_split_tables
                 .data()
                 .iter()
-                .filter(|entry| entry.encrypted_data_value.attribute_name == column)
+                .filter(|entry| entry.encrypted_data_value.attribute_name == *column)
                 .collect(),
         );
 
@@ -185,7 +184,7 @@ pub fn run(table: serde_json::Value, source: &str) {
             finalized_split_tables
                 .data()
                 .iter()
-                .filter(|entry| entry.data_value.attribute_name == column)
+                .filter(|entry| entry.data_value.attribute_name == *column)
                 .collect(),
         );
     }

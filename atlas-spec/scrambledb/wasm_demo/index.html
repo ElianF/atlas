@@ -106,6 +106,12 @@
     // Initialise wasm context.
     await init();
   </script>
+  <!-- <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script> -->
+  <script type="text/javascript"
+    src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
 </head>
 
 <body>
@@ -210,7 +216,7 @@
         </form>
       </div>
       <div id="pastinput-a" style="display:none;">
-        <pre><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_A, uid)</code></pre>
+        <pre><code style="font-size:70%;"><script type="math/tex">x_i \leftarrow \textbf{coPRF.Eval.Blind}(bpk_A, uid)</script></code></pre>
         <details open>
           <summary>
             Input: Blinded Table A
