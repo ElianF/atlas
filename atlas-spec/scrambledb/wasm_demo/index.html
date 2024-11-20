@@ -99,6 +99,19 @@
       margin: 0em;
       max-width: 1300px;
     }
+
+    .latexText {
+      font-size: 100%;
+    }
+
+    .latexCode {
+      font-size: 100%;
+    }
+
+    .latexHeading {
+      font-size: 100%;
+    }
+  
   </style>
   <!-- Note the usage of `type=module` here as this is an ES6 module -->
   <script type="module">
@@ -178,8 +191,8 @@
       var table = document.getElementById('inputtable-b');
       var parsed = parseTable(table);
       console.log(parsed);
-      var out = init_table(JSON.stringify(parsed), "b", seed);
-      console.log(out);
+      // var out = init_table(JSON.stringify(parsed), "b", seed);
+      // console.log(out);
       document.getElementById('pastinput-b').style.display = "block";
 
       document.getElementById('pseudonymization').style.display = "block";
@@ -192,14 +205,14 @@
   <div id="data-source-input" class="wrapper">
 
     <div class="ds a">
-      <h3>Data Source A</h3>
+      <h3>Data Source <span class="latexHeading"><script type="math/tex">S_1</script></span></h3>
       
       <div>
         <form>
           <table id="inputtable-a">
             <thead>
               <tr>
-                <th>Identity</th>
+                <th>Identity (uid)</th>
                 <th>Address</th>
                 <th>Favourite Color</th>
               </tr>
@@ -218,24 +231,26 @@
         </form>
       </div>
       <div id="pastinput-a" style="display:none;">
-        <pre><code style="font-size:70%;"><script type="math/tex">x_i \leftarrow \textbf{coPRF.Eval.Blind}(bpk_A, uid)</script></code></pre>
+        <p>Blind the unique identifiers (uid) for yourself.</p>
+        <p>This ensures, that the converter does not learn the uids.</p>
+        <pre><code><span class="latexCode"><script type="math/tex">x_i \leftarrow \textbf{coPRF.Eval.Blind}(bpk_A, uid)</script></span></code></pre>
         <details open>
           <summary>
-            Input: Blinded Table A
+            Output: Blinded Table A
           </summary>
           <div id="data-source-blind-1-a"></div>
         </details>
       </div>
     </div>
     <div class="ds b">
-      <h3>Data Source B</h3>
+      <h3>Data Source <span class="latexHeading"><script type="math/tex">S_2</script></span></h3>
       
       <div>
         <form>
           <table id="inputtable-b">
             <thead>
               <tr>
-                <th>Identity</th>
+                <th>Identity (uid)</th>
                 <th>Date of Birth</th>
               </tr>
             </thead>
@@ -251,10 +266,11 @@
         </form>
       </div>
       <div id="pastinput-b" style="display:none;">
-        <pre><code>𝑥_𝑖 ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐁𝐥𝐢𝐧𝐝(bpk_B, uid)</code></pre>
+        <p>Blind the unique identifiers (uid) for yourself. This ensures, that the converter does not learn the uids.</p>
+        <pre><code><span class="latexCode"><script type="math/tex">x_i \leftarrow \textbf{coPRF.Eval.Blind}(bpk_B, uid)</script></span></code></pre>
         <details open>
           <summary>
-            Input: Blinded Table B
+            Output: Blinded Table B
           </summary>
           <div id="data-source-blind-1-b"></div>
         </details>
@@ -269,7 +285,8 @@
         <h3>Converter (Pseudonymization)</h3>
       </div>
       <div class="a">
-        <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐄𝐱𝐞𝐜(𝑘_𝑗, bpk_A, 𝑥_𝑖)</code></pre>
+        <p>The Converter calculates the prestage of pseudonyms using the key of the source and <span class="latexText"><script type="math/tex">k_j</script></span>, a key derived from the name of the column.</p>
+        <pre><code><span class="latexCode"><script type="math/tex">y_{i,j} \leftarrow \textbf{coPRF.Eval.Exec}(k_j, bpk_A, x_i)</script></span></code></pre>
         <div>
           <details open>
             <summary>
@@ -280,7 +297,8 @@
         </div>
       </div>
       <div class="b">
-        <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐄𝐯𝐚𝐥.𝐄𝐱𝐞𝐜(𝑘_𝑗, bpk_B, 𝑥_𝑖)</code></pre>
+        <p>The Converter calculates the prestage of pseudonyms using the key of the source and <span class="latexText"><script type="math/tex">k_j</script></span>, a key derived from the name of the column.</p>
+        <pre><code><span class="latexCode"><script type="math/tex">y_{i,j} \leftarrow \textbf{coPRF.Eval.Exec}(k_j, bpk_B, x_i)</script></span></code></pre>
         <div>
           <details open>
             <summary>
@@ -294,8 +312,13 @@
 
     <div id="data-source-permutate" class="wrapper">
       <div class="ds a">
-        <h3>Data Source A</h3>
-        <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_𝐴, 𝑦_{𝑖,𝑗})</code></pre>
+        <h3>Data Source <span class="latexHeading"><script type="math/tex">S_1</script></span></h3>
+        <p>
+          The Data Source finalizes the pseudonyms by unlbinding nym and using a pseudorandom permutation.<br>
+          This ensures, that the pseudonyms can not be linked to the values of <span class="latexText"><script type="math/tex">y_{i,j}</script></span> by a corrupt converter.
+        </p>
+        <pre><code><span class="latexCode"><script type="math/tex">y_{i,j} \leftarrow \textbf{coPRF.Eval.Unblind}(bsk_A, y_{i,j})</script></span></code></pre>
+        <pre><code><span class="latexCode"><script type="math/tex">nym \leftarrow \textbf{coPRF.Eval}(k_A, y_{i,j})</script></span></code></pre>
         <div>
           <details open>
             <summary>
@@ -306,8 +329,13 @@
         </div>
       </div>
       <div class="ds b">
-        <h3>Data Source B</h3>
-        <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_B, 𝑦_{𝑖,𝑗})</code></pre>
+        <h3>Data Source <span class="latexHeading"><script type="math/tex">S_2</script></span></h3>
+        <p>
+          The Data Source finalizes the pseudonyms by unlbinding nym and using a pseudorandom permutation.<br>
+          This ensures, that the pseudonyms can not be linked to the values of <span class="latexText"><script type="math/tex">y_{i,j}</script></span> by a corrupt converter.
+        </p>
+        <pre><code><span class="latexCode"><script type="math/tex">y_{i,j} \leftarrow \textbf{coPRF.Eval.Unblind}(bsk_B, y_{i,j})</script></span></code></pre>
+        <pre><code><span class="latexCode"><script type="math/tex">nym \leftarrow \textbf{coPRF.Eval}(k_B, y_{i,j})</script></span></code></pre>
         <div>
           
           <details open>
@@ -321,7 +349,7 @@
     </div>
 
     <div id="join-request" class="dp">
-      <h3>Data Processor (Join-Request)</h3>
+      <h3>Data Processor <span class="latexHeading"><script type="math/tex">P</script></span> (Join-Request)</h3>
       <pre>
         <code>join attributes Address & Date of Birth</code>
       </pre>
@@ -333,38 +361,42 @@
 
     <div id="join-prepare" class="wrapper">
       <div class="ds a">
-        <h3>Data Source A</h3>
-        <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐁𝐥𝐢𝐧𝐝(bpk_𝑃 , 𝑦_{𝑖,𝑗})</code></pre>  
+        <h3>Data Source <span class="latexHeading"><script type="math/tex">S_1</script></span></h3>
+        <p>The Data Sources blind the nym for the Data Processor <span class="latexText"><script type="math/tex">P</script></span></p>
+        <pre><code><span class="latexCode"><script type="math/tex">y_{i,j} \leftarrow \textbf{coPRF.Convert.Blind}(bpk_P, nym)</script></span></code></pre>  
         <div>
           <details open>
             <summary>
-              Input: Blinded Tables
+              Output: Blinded Tables
             </summary>
             <div id="data-source-blind-2-a"></div>
           </details>
         </div>
       </div>
       <div class="ds b">
-        <h3>Data Source B</h3>
-        <pre><code>𝑦_{𝑖,𝑗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐁𝐥𝐢𝐧𝐝(bpk_𝑃 , 𝑦_{𝑖,𝑗})</code></pre>
+        <h3>Data Source <span class="latexHeading"><script type="math/tex">S_2</script></span></h3>
+        <p>The Data Sources blind the nym for the Data Processor <span class="latexText"><script type="math/tex">P</script></span></p>
+        <pre><code><span class="latexCode"><script type="math/tex">y_{i,j} \leftarrow \textbf{coPRF.Convert.Blind}(bpk_P, nym)</script></span></code></pre>  
         <div>
           <details open>
             <summary>
-              Input: Blinded Tables
+              Output: Blinded Tables
             </summary>
             <div id="data-source-blind-2-b"></div>
           </details>
         </div>
       </div>
     </div>
-
+    
     <div id="converter" class="wrapper conv">
       <div class="heading">
         <h3>Converter (Join)</h3>
       </div>
       
       <div class="a">
-        <pre><code>𝑦_{𝑖,𝑒^∗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐄𝐱𝐞𝐜 (𝑘_𝑗, 𝑘^∗, bpk_𝑝, 𝑦_{𝑖,𝑗})</code></pre>
+        <p>The Converter converts <span class="latexText"><script type="math/tex">y_{i,j}</script></span> towards a newly generated random key <span class="latexText"><script type="math/tex">k^*</script></span>.</p>
+        <pre><code><span class="latexCode"><script type="math/tex">k^* \leftarrow \textbf{coPRF.KGen}(msk, e^*)</script></span></code></pre>
+        <pre><code><span class="latexCode"><script type="math/tex">y_{i, e^*} \leftarrow \textbf{coPRF.Convert.Exec}(k_j, k^*, bpk_P, y_{i,j})</script></span></code></pre>
         <div>
           <details open>
             <summary>
@@ -375,7 +407,9 @@
         </div>
       </div>
       <div class="b">
-        <pre><code>𝑦_{𝑖,𝑒^∗} ← 𝐜𝐨𝐏𝐑𝐅.𝐂𝐨𝐧𝐯𝐞𝐫𝐭.𝐄𝐱𝐞𝐜 (𝑘_𝑗, 𝑘^∗, bpk_𝑝, 𝑦_{𝑖,𝑗})</code></pre>
+        <p>The Converter converts <span class="latexText"><script type="math/tex">y_{i,j}</script></span> towards a newly generated random key <span class="latexText"><script type="math/tex">k^*</script></span>.</p>
+        <pre><code><span class="latexCode"><script type="math/tex">k^* \leftarrow \textbf{coPRF.KGen}(msk, e^*)</script></span></code></pre>
+        <pre><code><span class="latexCode"><script type="math/tex">y_{i, e^*} \leftarrow \textbf{coPRF.Convert.Exec}(k_j, k^*, bpk_P, y_{i,j})</script></span></code></pre>
         <div>
           <details open>
             <summary>
@@ -388,8 +422,9 @@
     </div>
 
     <div id="Data Processor" class="dp">
-      <h3>Data Processor</h3>
-      <pre><code>nym ← 𝐏𝐑𝐏.𝐄𝐯𝐚𝐥(𝑘_𝑃 , 𝑦_𝑖,𝑒^∗)</code></pre>
+      <h3>Data Processor <span class="latexheading"><script type="math/tex">P</script></span></h3>
+      <p>The Data Processor finalizes the pseudonym by using a pseudorandom-function. This ensures, that the pseudonyms cannot be linked to the input values by a corrupt converter.</p>
+      <pre><code><span class="latexCode"><script type="math/tex">nym \leftarrow \textbf{PRP.Eval}(k_P, y_{i, e^*})</script></span></code></pre>
       <div>
         <details open>
           <summary>
