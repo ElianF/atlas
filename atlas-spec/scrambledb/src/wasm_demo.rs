@@ -45,7 +45,7 @@ pub fn generate_plain_table(table: serde_json::Value, columns: &Vec<&str>) -> Ta
             let encoded_value = row[column].as_str().unwrap().as_bytes().to_vec();
 
             data.push(IdentifiableData {
-                handle: row["Identity"].as_str().unwrap().to_string(),
+                handle: row["Identity (uid)"].as_str().unwrap().to_string(),
                 data_value: DataValue {
                     value: encoded_value,
                     attribute_name: (*column).into(),

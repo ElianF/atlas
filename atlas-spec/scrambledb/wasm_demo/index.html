@@ -191,8 +191,8 @@
       var table = document.getElementById('inputtable-b');
       var parsed = parseTable(table);
       console.log(parsed);
-      // var out = init_table(JSON.stringify(parsed), "b", seed);
-      // console.log(out);
+      var out = init_table(JSON.stringify(parsed), "b", seed);
+      console.log(out);
       document.getElementById('pastinput-b').style.display = "block";
 
       document.getElementById('pseudonymization').style.display = "block";
