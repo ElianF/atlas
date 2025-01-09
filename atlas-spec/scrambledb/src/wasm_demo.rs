@@ -63,10 +63,12 @@ pub fn run(table: serde_json::Value, source: &str, seed: u64) {
     let mut rng = rand::thread_rng();
     let mut seeded_rng = rand::rngs::StdRng::seed_from_u64(seed);
 
+    // used for randomized encryption and every other one-way-streets
     let mut randomness = [0u8; 100000];
     rng.fill_bytes(&mut randomness);
     let mut randomness = Randomness::new(randomness.to_vec());
     
+    // used if randomization across different instances need to be identical. Would be served naturally if it was a true distributed system
     let mut seeded_randomness = [0u8; 100000];
     seeded_rng.fill_bytes(&mut seeded_randomness);
     let mut seeded_randomness = Randomness::new(seeded_randomness.to_vec());
