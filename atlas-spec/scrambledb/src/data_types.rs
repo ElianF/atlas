@@ -46,6 +46,16 @@ pub struct EncryptedDataValue {
 /// An encrypted data value.
 #[cfg(not(feature = "double-hpke"))]
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub struct DoubleEncryptedDataValue {
+    /// A vector of ElGamal ciphertexts encoding the encrypted data value.
+    pub(crate) value: Vec<(P256Point, P256Point)>,
+    /// The name of the attribute the value belongs to.
+    pub(crate) attribute_name: String,
+}
+
+/// An encrypted data value.
+#[cfg(not(feature = "double-hpke"))]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct EncryptedDataValue {
     /// A vector of ElGamal ciphertexts encoding the encrypted data value.
     pub(crate) value: Vec<(P256Point, P256Point)>,
@@ -74,7 +84,7 @@ pub struct BlindedIdentifiableData {
     /// A blinded plain text handle.
     pub(crate) blinded_handle: BlindedIdentifiableHandle,
     /// An encrypted data value.
-    pub(crate) encrypted_data_value: EncryptedDataValue,
+    pub(crate) double_encrypted_data_value: DoubleEncryptedDataValue,
 }
 
 /// The blinded version of a pseudonymized piece of data.

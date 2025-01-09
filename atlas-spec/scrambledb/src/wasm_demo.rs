@@ -90,9 +90,11 @@ pub fn run(table: serde_json::Value, source: &str, seed: u64) {
     let source_table = generate_plain_table(table, &columns);
     let source_context = StoreContext::setup(&mut randomness).unwrap();
     let (ek, bpk) = source_context.public_keys();
+    let (ek_c, bpk_c) = converter_context.public_keys();
 
     // Split conversion
     let blind_source_table = crate::split::blind_orthonymous_table(
+        &ek_c
         &ek,
         bpk,
         source_table.clone(),
@@ -103,7 +105,6 @@ pub fn run(table: serde_json::Value, source: &str, seed: u64) {
     let blind_split_tables = crate::split::pseudonymize_blinded_table(
         &converter_context,
         bpk,
-        &ek,
         blind_source_table.clone(),
         &mut randomness,
     )

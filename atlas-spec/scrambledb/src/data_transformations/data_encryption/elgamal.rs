@@ -2,11 +2,19 @@ use hacspec_lib::hacspec_helper::NatMod;
 use hacspec_lib::Randomness;
 use p256::{P256Point, P256Scalar};
 
-use crate::data_types::{DataValue, EncryptedDataValue};
+use crate::data_types::{DataValue, EncryptedDataValue, DoubleEncryptedDataValue};
 use crate::error::Error;
-use crate::setup::{StoreDecryptionKey, StoreEncryptionKey};
+use crate::setup::{ConverterEncryptionKey, ConverterDecryptionKey, StoreDecryptionKey, StoreEncryptionKey};
 
 fn encode_byte(byte: &u8) -> P256Point {
+    let mut scalar_encoding = P256Scalar::one();
+    for _i in 0..*byte {
+        scalar_encoding = scalar_encoding.fadd(P256Scalar::one());
+    }
+    p256::p256_point_mul_base(scalar_encoding).unwrap()
+}
+
+fn encode_byte_double(byte: &u8) -> P256Point {
     let mut scalar_encoding = P256Scalar::one();
     for _i in 0..*byte {
         scalar_encoding = scalar_encoding.fadd(P256Scalar::one());
@@ -44,6 +52,22 @@ pub(crate) fn encrypt(
     Ok(encryted_data_value)
 }
 
+pub(crate) fn encrypt_double(
+    data: &EncryptedDataValue,
+    ek: &ConverterEncryptionKey,
+    randomness: &mut Randomness,
+) -> Result<DoubleEncryptedDataValue, Error> {
+    let rerandomized_data = data
+        .value
+        .iter()
+        .map(|c| elgamal::rerandomize(ek.0, *c, randomness).unwrap())
+        .collect();
+    Ok(DoubleEncryptedDataValue {
+        attribute_name: data.attribute_name.clone(),
+        value: rerandomized_data,
+    })
+}
+
 pub(crate) fn decrypt(
     data: &EncryptedDataValue,
     dk: &StoreDecryptionKey,
@@ -54,6 +78,21 @@ pub(crate) fn decrypt(
         .map(|c| elgamal::decrypt(dk.0, *c).unwrap());
     let decoded_data = decrypted_data.map(decode_point).collect();
     Ok(DataValue {
+        attribute_name: data.attribute_name.clone(),
+        value: decoded_data,
+    })
+}
+
+pub(crate) fn decrypt_double(
+    data: &DoubleEncryptedDataValue,
+    dk: &ConverterDecryptionKey,
+) -> Result<EncryptedDataValue, Error> {
+    let decrypted_data = data
+        .value
+        .iter()
+        .map(|c| elgamal::decrypt(dk.0, *c).unwrap());
+    let decoded_data = decrypted_data.map(decode_point).collect();
+    Ok(EncryptedDataValue {
         attribute_name: data.attribute_name.clone(),
         value: decoded_data,
     })

@@ -16,7 +16,7 @@ use oprf::coprf::{
 use crate::{
     data_types::*,
     error::Error,
-    setup::{StoreContext, StoreEncryptionKey},
+    setup::{StoreContext, ConverterContext, StoreEncryptionKey, ConverterEncryptionKey},
 };
 
 pub(crate) mod data_encryption;
@@ -39,6 +39,7 @@ const PSEUDONYMIZATION_CONTEXT: &[u8] = b"CoPRF-Context-Pseudonymization";
 /// level-1 encrypted.
 pub fn blind_identifiable_datum(
     bpk: &BlindingPublicKey,
+    ek_c: &ConverterEncryptionKey,
     ek: &StoreEncryptionKey,
     datum: &IdentifiableData,
     randomness: &mut Randomness,
@@ -54,10 +55,12 @@ pub fn blind_identifiable_datum(
     // Encrypt data value towards receiver.
     let encrypted_data_value =
         data_encryption::encrypt_data_value(&datum.data_value, ek, randomness)?;
+    let double_encrypted_data_value =
+        data_encryption::encrypt_data_value2(&encrypted_data_value, ek_c, randomness)?;
 
     Ok(BlindedIdentifiableData {
         blinded_handle,
-        encrypted_data_value,
+        double_encrypted_data_value,
     })
 }
 
@@ -114,15 +117,14 @@ pub fn blind_pseudonymized_datum(
 ///  datum's blinded handle has been obliviously evaluated to a pseudonym and
 ///  the datum's value has been level-2 encrypted towards the receiver.
 pub fn pseudonymize_blinded_datum(
-    coprf_context: &CoPRFEvaluatorContext,
+    converter_context: &ConverterContext,
     bpk: &BlindingPublicKey,
-    ek: &StoreEncryptionKey,
     datum: &BlindedIdentifiableData,
     randomness: &mut Randomness,
 ) -> Result<BlindedPseudonymizedData, Error> {
     let key = derive_key(
-        coprf_context,
-        datum.encrypted_data_value.attribute_name.as_bytes(),
+        &((*converter_context).coprf_context),
+        datum.double_encrypted_data_value.attribute_name.as_bytes(),
     )?;
 
     // Obliviously generate raw pseudonym.
@@ -133,9 +135,13 @@ pub fn pseudonymize_blinded_datum(
         randomness,
     )?);
 
-    // Rerandomize encrypted data value towards receiver.
-    let encrypted_data_value =
-        data_encryption::rerandomize_encryption(&datum.encrypted_data_value, ek, randomness)?;
+    // // Rerandomize encrypted data value towards receiver.
+    // let encrypted_data_value =
+    //     data_encryption::rerandomize_encryption(&datum.encrypted_data_value, ek, randomness)?;
+        
+    // Decrypt data value for storage.
+    let encrypted_data_value: EncryptedDataValue =
+        data_encryption::decrypt_data_value2(&datum.double_encrypted_data_value, converter_context)?;
 
     Ok(BlindedPseudonymizedData {
         blinded_handle,

@@ -17,8 +17,19 @@ use crate::{
     error::Error,
 };
 
+/// A converters's private decryption key.
+#[cfg(not(feature = "double-hpke"))]
+pub struct ConverterDecryptionKey(pub(crate) p256::P256Scalar);
+
+/// A converters's public encryption key.
+#[derive(Clone)]
+#[cfg(not(feature = "double-hpke"))]
+pub struct ConverterEncryptionKey(pub(crate) p256::P256Point);
+
 pub struct ConverterContext {
     pub(crate) coprf_context: CoPRFEvaluatorContext,
+    pub(crate) dk: ConverterDecryptionKey,
+    ek: ConverterEncryptionKey,
 }
 
 /// A data store's private decryption key.
@@ -64,8 +75,12 @@ impl ConverterContext {
     ///     return coPRFEvaluatorContext::new(msk)
     /// ```
     pub fn setup(randomness: &mut Randomness) -> Result<Self, Error> {
+        let (dk, ek) = generate_converter_keys(randomness)?;
+
         Ok(ConverterContext {
             coprf_context: CoPRFEvaluatorContext::new(randomness)?,
+            dk,
+            ek
         })
     }
 }
@@ -198,4 +213,13 @@ fn generate_store_keys(
     let (dk, ek) = elgamal::generate_keys(randomness)?;
 
     Ok((StoreDecryptionKey(dk), StoreEncryptionKey(ek)))
+}
+
+#[cfg(not(feature = "double-hpke"))]
+fn generate_converter_keys(
+    randomness: &mut Randomness,
+) -> Result<(ConverterDecryptionKey, ConverterEncryptionKey), Error> {
+    let (dk, ek) = elgamal::generate_keys(randomness)?;
+
+    Ok((ConverterDecryptionKey(dk), ConverterEncryptionKey(ek)))
 }

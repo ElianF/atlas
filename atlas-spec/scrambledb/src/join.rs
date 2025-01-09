@@ -121,9 +121,11 @@ mod tests {
         let plain_table = generate_plain_table();
 
         let (lake_ek, lake_bpk) = lake_context.public_keys();
+        let (converter_ek, converter_bpk) = converter_context.public_keys();
 
         // == Blind Table for Pseudonymization ==
         let blind_table = crate::split::blind_orthonymous_table(
+            &converter_ek,
             &lake_ek,
             lake_bpk,
             plain_table.clone(),
@@ -135,7 +137,6 @@ mod tests {
         let converted_tables = crate::split::pseudonymize_blinded_table(
             &converter_context,
             lake_bpk,
-            &lake_ek,
             blind_table,
             &mut randomness,
         )

@@ -4,9 +4,9 @@ pub(crate) mod double_hpke;
 #[cfg(not(feature = "double-hpke"))]
 pub(crate) mod elgamal;
 
-use crate::data_types::{DataValue, EncryptedDataValue};
+use crate::data_types::{DataValue, DoubleEncryptedDataValue, EncryptedDataValue};
 use crate::error::Error;
-use crate::setup::{StoreContext, StoreEncryptionKey};
+use crate::setup::{StoreContext, ConverterContext, StoreEncryptionKey, ConverterEncryptionKey};
 use hacspec_lib::Randomness;
 
 /// Encrypt a data value towards a data store.
@@ -44,6 +44,15 @@ pub(crate) fn encrypt_data_value(
     randomness: &mut Randomness,
 ) -> Result<EncryptedDataValue, Error> {
     let encrypted_data_value = elgamal::encrypt(data, ek, randomness)?;
+    Ok(encrypted_data_value)
+}
+#[cfg(not(feature = "double-hpke"))]
+pub(crate) fn encrypt_data_value2(
+    data: &EncryptedDataValue,
+    ek: &ConverterEncryptionKey,
+    randomness: &mut Randomness,
+) -> Result<DoubleEncryptedDataValue, Error> {
+    let encrypted_data_value = elgamal::encrypt_double(data, ek, randomness)?;
     Ok(encrypted_data_value)
 }
 
@@ -113,4 +122,11 @@ pub(crate) fn decrypt_data_value(
     store_context: &StoreContext,
 ) -> Result<DataValue, Error> {
     elgamal::decrypt(data, &store_context.dk)
+}
+#[cfg(not(feature = "double-hpke"))]
+pub(crate) fn decrypt_data_value2(
+    data: &DoubleEncryptedDataValue,
+    converter_context: &ConverterContext,
+) -> Result<EncryptedDataValue, Error> {
+    elgamal::decrypt_double(data, &converter_context.dk)
 }

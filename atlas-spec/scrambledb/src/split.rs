@@ -6,7 +6,7 @@ use crate::{
     data_transformations::{blind_identifiable_datum, pseudonymize_blinded_datum},
     data_types::{BlindedIdentifiableData, BlindedPseudonymizedData, IdentifiableData},
     error::Error,
-    setup::{ConverterContext, StoreEncryptionKey},
+    setup::{ConverterContext, ConverterEncryptionKey, StoreEncryptionKey},
     table::Table,
 };
 
@@ -24,6 +24,7 @@ use crate::{
 /// Outputs:
 /// A table of blinded identifiable data.
 pub fn blind_orthonymous_table(
+    ek_converter: &ConverterEncryptionKey,
     ek_receiver: &StoreEncryptionKey,
     bpk_receiver: BlindingPublicKey,
     table: Table<IdentifiableData>,
@@ -32,7 +33,7 @@ pub fn blind_orthonymous_table(
     let mut blinded_table_entries = table
         .data()
         .iter()
-        .map(|entry| blind_identifiable_datum(&bpk_receiver, ek_receiver, entry, randomness))
+        .map(|entry| blind_identifiable_datum(&bpk_receiver, ek_converter, ek_receiver, entry, randomness))
         .collect::<Result<Vec<BlindedIdentifiableData>, Error>>()?;
 
     blinded_table_entries.sort();
@@ -58,7 +59,6 @@ pub fn blind_orthonymous_table(
 pub fn pseudonymize_blinded_table(
     converter_context: &ConverterContext,
     bpk_receiver: BlindingPublicKey,
-    ek_receiver: &StoreEncryptionKey,
     blinded_table: Table<BlindedIdentifiableData>,
     randomness: &mut Randomness,
 ) -> Result<Table<BlindedPseudonymizedData>, Error> {
@@ -67,9 +67,8 @@ pub fn pseudonymize_blinded_table(
         .iter()
         .map(|entry| {
             pseudonymize_blinded_datum(
-                &converter_context.coprf_context,
+                &converter_context,
                 &bpk_receiver,
-                ek_receiver,
                 entry,
                 randomness,
             )
@@ -107,9 +106,11 @@ mod tests {
         let plain_table = generate_plain_table();
 
         let (lake_ek, lake_bpk) = lake_context.public_keys();
+        let (converter_ek, converter_bpk) = converter_context.public_keys();
 
         // == Blind Table for Pseudonymization ==
         let blind_table = crate::split::blind_orthonymous_table(
+            &converter_ek,
             &lake_ek,
             lake_bpk,
             plain_table.clone(),
@@ -121,7 +122,6 @@ mod tests {
         let converted_tables = crate::split::pseudonymize_blinded_table(
             &converter_context,
             lake_bpk,
-            &lake_ek,
             blind_table,
             &mut randomness,
         )
